@@ -1,0 +1,18 @@
+:root{
+    --dark: #393E41;
+    --light: #F6F7EB;
+    --accent: #F97432;
+    --shadow: #00000080;
+    
+    --container-1-width: 100ch;
+    --padding-1: 1em;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    text-wrap: balance;
+    box-sizing: border-box;
+    /* font-family: 'Dela Gothic One', sans-serif; */
+    font-family: 'Bebas Neue', sans-serif;
+}

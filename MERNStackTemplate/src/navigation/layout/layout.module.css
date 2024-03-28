@@ -1,0 +1,8 @@
+.content{
+    background-color: var(--dark);
+}
+
+.mainContent{
+    background-color: var(--light);
+    min-height: 66vh;
+}
