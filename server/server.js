@@ -21,12 +21,22 @@ app.use("/", authRoutes);
 //====================Middleware to parse JSON and urlencoded form data====================
 const upload = multer({ dest: "uploads/" });
 //====================Route to handle form submission====================
-app.post("/upload", upload.single("file"), (req, res) => {
-  // const {name, email} = req.body;
-  const file = req.file;
-  console.log("Received form data:", req.body);
-  res.send("Form data received successfully.");
-});
+app.post(
+  "/upload",
+  upload.fields([
+    { name: "fileUpload" },
+    { name: "landscapeFile" },
+    { name: "portraitFile" },
+    { name: "squareFile" },
+  ]),
+  (req, res) => {
+    // const {name, email} = req.body;
+    const files = req.files;
+    console.log("Received form data:", req.body);
+    console.log("~~~~~~~~~FILES~~~~~~~~:", files);
+    res.send("Form data received successfully.");
+  }
+);
 
 // connect the app to a database
 mongoose
