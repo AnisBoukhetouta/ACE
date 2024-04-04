@@ -1,4 +1,3 @@
-// Import required packages
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -7,22 +6,16 @@ const File = require("./models/fileModel.js");
 const fs = require("fs");
 const multer = require("multer");
 const cors = require("cors");
-const authRoutes = require("./routes/authRoutes");
 const port = process.env.PORT || 5000;
 
-// Initialize express app
 const app = express();
-
-// Allow the app to use middleware
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
   console.log(req.path, req.method);
   next();
 });
-app.use("/", authRoutes);
 
-// Middleware to parse JSON and urlencoded form data
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const folderPath = `uploads/${req.body.gameTitle}`;
@@ -30,34 +23,17 @@ const storage = multer.diskStorage({
     cb(null, folderPath);
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + path.extname(file.originalname));
+    console.log("111111111", path.extname(file.originalname));
+    const extension = path.extname(file.originalname);
+    cb(null, `${file.fieldname}${extension}`);
+    console.log("222222222", file);
   },
 });
 const upload = multer({ storage: storage });
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-    // Start the server after connecting to MongoDB
-    app.listen(port, () => {
-      console.log("Server started on port", port);
-    });
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
-
-// Route to retrieve files from MongoDB
 app.get("/files", async (req, res) => {
   try {
-    // Retrieve all files from MongoDB
     // const files = await File.find();
-    // Send the files as JSON response
 
     const files = await File.aggregate([
       {
@@ -75,19 +51,22 @@ app.get("/files", async (req, res) => {
   }
 });
 
-// Route to handle file uploads
 app.post(
   "/upload",
   upload.fields([
-    { name: "fileUpload" },
     { name: "landscapeFile" },
     { name: "portraitFile" },
     { name: "squareFile" },
+    { name: "fileUpload0" },
+    { name: "fileUpload1" },
+    { name: "fileUpload2" },
+    { name: "fileUpload3" },
   ]),
   async (req, res) => {
     try {
       const files = [];
 
+      console.log("~~~~~~~~~~", req.files);
       for (const fieldName of Object.keys(req.files)) {
         for (const file of req.files[fieldName]) {
           const savedFile = await File.create({
@@ -116,3 +95,18 @@ app.post(
     }
   }
 );
+
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(port, () => {
+      console.log("Server started on port", port);
+    });
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
